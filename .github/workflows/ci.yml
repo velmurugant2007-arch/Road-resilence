@@ -1,0 +1,21 @@
+# ============================================================================
+# Project ATLAS — CI Placeholder
+# ============================================================================
+# This workflow will be configured during Phase 7 (Implementation).
+# Placeholder ensures the .github/workflows/ directory exists in version control.
+
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace Initialized
+        run: echo "CI pipeline will be configured during Implementation Phase"
