@@ -37,7 +37,7 @@ Used strictly for geospatial status reporting, graph criticality ranking, and di
 Designed to ensure absolute legibility against dark satellite imagery.
 
 ```css
-:root {
+:root, [data-theme="dark"] {
   /* Canvas Backgrounds */
   --bg-canvas: #05070A;          /* Deepest cosmic black for empty map regions */
   --bg-app: #0A0E14;             /* Main app wrapper background */
@@ -51,6 +51,17 @@ Designed to ensure absolute legibility against dark satellite imagery.
   --border-subtle: rgba(255, 255, 255, 0.08); /* Card outlines */
   --border-strong: rgba(255, 255, 255, 0.18); /* Active input borders, focused elements */
   --border-glow: rgba(0, 242, 254, 0.50);     /* Selected road segment highlight border */
+}
+
+[data-theme="light"] {
+  --bg-canvas: #F8FAFC;
+  --bg-app: #F1F5F9;
+  --surface-1: rgba(255, 255, 255, 0.75);
+  --surface-2: rgba(241, 245, 249, 0.85);
+  --surface-3: rgba(226, 232, 240, 0.95);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.18);
+  --border-glow: rgba(0, 140, 255, 0.50);
 }
 ```
 

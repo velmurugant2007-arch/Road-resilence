@@ -7,8 +7,18 @@ This document specifies the anatomical structure, states, and props for all reus
 ## 1. Global Navigation & HUD Header
 
 ### `TopTelemetryBar`
-* **Anatomy:** Left-aligned ISRO/ATLAS branding emblem; center-aligned system health pill (`HEALTHY: <50ms`); right-aligned quick action buttons (OpenAPI Docs, GitHub repo, Fullscreen map toggle).
+* **Anatomy:** Left-aligned ISRO/ATLAS branding emblem; center-aligned system health pill (`HEALTHY: <50ms`); right-aligned presentation action buttons: **Export Report**, **Capture Screenshot**, **Generate PDF**, **Settings**, and **Notification Bell** (with unread badge counter).
 * **Styling:** Floating glassmorphic bar (`--surface-1`) anchored 16px from top viewport edge.
+
+### `CommandPaletteModal` (`Ctrl+K` / `Cmd+K`)
+* **Anatomy:** Linear.app style floating search dialog with instant fuzzy lookup.
+* **Capabilities:** Search nodes (`N154`), edges (`E-088`), and repair IDs (`RH-001`); instantly jump across the 8 dashboard views; trigger stress simulations; export reports; execute common system actions.
+
+### `MiniMapOverview`
+* **Anatomy:** Compact bottom-left spatial inset card (`220px x 160px`) rendering Hero City extent, current viewport bounds rectangle, active disaster blast zone indicator, and live camera coordinates.
+
+### `NotificationCenterDrawer`
+* **Anatomy:** Slide-out glassmorphic panel storing chronological telemetry events (e.g., "Simulation completed", "Graph healing accepted RH-001", "AI inference completed", "GeoJSON Exported", "System Warnings").
 
 ### `SidebarNavigationDock`
 * **Anatomy:** Collapsible left dock containing vertical icon buttons representing the 8 system views.
