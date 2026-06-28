@@ -22,8 +22,8 @@ class GISTransformer:
         """
         Converts a raw numpy array (C, H, W) from rasterio into a normalized PyTorch tensor ready for the AI model.
         """
-        # 1. Convert to float32
-        tensor = torch.from_numpy(tile_data).float()
+        # 1. Convert to float32 (ensuring contiguous memory layout)
+        tensor = torch.from_numpy(np.ascontiguousarray(tile_data)).float()
         
         # 2. Scale 8-bit integers (0-255) to (0.0 - 1.0) if not already float
         # Note: If the GeoTIFF is 16-bit, custom scaling is required before this step.

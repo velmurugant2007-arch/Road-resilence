@@ -43,9 +43,9 @@ class CLDiceLoss(nn.Module):
         """
         probs = torch.sigmoid(logits)
         
-        # Compute soft skeletons
         skel_pred = self.skeletonizer(probs)
-        skel_target = self.skeletonizer(targets)
+        with torch.no_grad():
+            skel_target = self.skeletonizer(targets)
         
         # Topology Precision: skeleton of prediction covered by ground truth
         t_prec_num = (skel_pred * targets).sum()

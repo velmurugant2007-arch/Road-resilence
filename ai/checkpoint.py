@@ -102,6 +102,14 @@ class CheckpointManager:
         model.load_state_dict(data["model_state_dict"])
         optimizer.load_state_dict(data["optimizer_state_dict"])
         
+        # Ensure optimizer state tensors match model parameter device
+        device = next(model.parameters()).device
+        for state in optimizer.state.values():
+            for k, v in state.items():
+                if isinstance(v, torch.Tensor):
+                    state[k] = v.to(device)
+
+        
         if scheduler is not None and data.get("scheduler_state_dict"):
             scheduler.load_state_dict(data["scheduler_state_dict"])
         

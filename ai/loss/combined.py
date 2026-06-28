@@ -60,9 +60,10 @@ class CombinedLoss(nn.Module):
                 "dice": Dice component value
                 "cldice": clDice component value
         """
-        loss_bce = self.bce(logits, targets)
-        loss_dice = self.dice(logits, targets)
-        loss_cldice = self.cldice(logits, targets)
+        zero_tensor = torch.tensor(0.0, device=logits.device)
+        loss_bce = self.bce(logits, targets) if self.bce_weight > 0 else zero_tensor
+        loss_dice = self.dice(logits, targets) if self.dice_weight > 0 else zero_tensor
+        loss_cldice = self.cldice(logits, targets) if self.cldice_weight > 0 else zero_tensor
         
         total = (
             self.bce_weight * loss_bce

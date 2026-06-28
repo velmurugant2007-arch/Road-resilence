@@ -234,6 +234,8 @@ class SegFormerRoadExtractor(nn.Module):
         """
         model = SegFormerRoadExtractor()
         state_dict = torch.load(weights_path, map_location=device)
+        if isinstance(state_dict, dict) and "model_state_dict" in state_dict:
+            state_dict = state_dict["model_state_dict"]
         missing, unexpected = model.load_state_dict(state_dict, strict=False)
         if missing:
             logger.warning(f"Missing keys during weight loading: {missing}")

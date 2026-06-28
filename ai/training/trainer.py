@@ -114,7 +114,7 @@ class Trainer:
             images = images.to(self.device)
             masks = masks.to(self.device)
             
-            self.optimizer.zero_grad()
+            self.optimizer.zero_grad(set_to_none=True)
             
             with torch.amp.autocast(device_type=self.device.type, enabled=self.amp_enabled):
                 logits = self.model(images)
@@ -157,7 +157,13 @@ class Trainer:
             # Adjust learning rate
             for param_group in self.optimizer.param_groups:
                 param_group["lr"] = ft.learning_rate
-            logger.info(f"Adjusted optimizer LR to fine-tuning rate: {ft.learning_rate}")
+            
+            # Switch loss weights to prioritize topological continuity
+            self.loss_fn.cldice_weight = 0.8
+            self.loss_fn.dice_weight = 0.2
+            self.loss_fn.bce_weight = 0.0
+            
+            logger.info(f"Adjusted optimizer LR to {ft.learning_rate} and switched loss weights to clDice=0.8, Dice=0.2")
 
     def train(self, max_epochs: Optional[int] = None):
         """Executes the complete training loop."""

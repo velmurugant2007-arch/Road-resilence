@@ -86,7 +86,7 @@ class RoadExtractionDataset(Dataset):
         # Normalize image using ImageNet stats (CER v2 requirement)
         image_tensor = self.transformer.to_model_tensor(image_np)
         
-        # Mask remains a raw binary tensor — no normalization
-        mask_tensor = torch.from_numpy(mask_np).float()
+        # Mask remains a raw binary tensor — ensure contiguous memory
+        mask_tensor = torch.from_numpy(np.ascontiguousarray(mask_np)).float()
         
         return image_tensor, mask_tensor
