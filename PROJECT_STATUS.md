@@ -44,16 +44,16 @@ road-resilence/
 - **Phase 4: Architecture & Design Specification** ✅ — Completed
 - **Phase 7.1: Project Skeleton & Foundation** ✅ — Completed, Verified, Approved
 - **Phase 7.2: GIS Module** ✅ — Completed, Verified, Approved
+- **Phase 7.3: AI Module** ✅ — Completed, Verified, Approved
 
 ## ⏳ Pending Phases
-- **Phase 7.3: AI Module** ✅ — Completed, Verified, Approved
-  - 7.3.1: Dataset Loader, Validation, Augmentation ✅ — Completed
-  - 7.3.2: SegFormer Model Wrapper ✅ — Completed
-  - 7.3.3: Loss Functions (Dice, Soft-Skeleton, clDice) ✅ — Completed
-  - 7.3.4: Training Pipeline ✅ — Completed
-  - 7.3.5: Inference Pipeline ✅ — Completed
-  - 7.3.6: Confidence Map & Calibration ✅ — Completed
 - **Phase 7.4: Graph Module** ← CURRENT
+  - 7.4.1: Skeletonization ✅ — Completed, Verified
+  - 7.4.2: Vectorization — Pending
+  - 7.4.3: Graph Construction — Pending
+  - 7.4.4: Graph Healing — Pending
+  - 7.4.5: Criticality Analysis — Pending
+  - 7.4.6: Stress Simulation — Pending
 - **Phase 7.5: Backend** — Pending
 - **Phase 7.6: Frontend** — Pending
 - **Phase 7.7: Integration** — Pending
@@ -89,8 +89,9 @@ road-resilence/
 - Dataset loader, synthetic probabilistic occlusions (8 types), SegFormer MiT-B2 wrapper, checkpoint manager, dual-output inference pipeline, topology-aware clDice loss, and production training pipeline are complete and verified.
 
 ## 🕸️ Graph Status
-**Status: ⏳ PENDING (Phase 7.4) ← NEXT**
-- No code written.
+**Status: 🔄 IN PROGRESS (Phase 7.4.1 Complete)**
+- Milestone 7.4.1 (Skeletonization) completed and verified: vectorized Zhang-Suen morphological thinning with pre/post-thinning artifact filtering.
+- Milestone 7.4.2 (Vectorization) pending.
 - Architecture: Hybrid Cost Function healing (Euclidean + AI Probability + Direction + Width + Density).
 - Centrality: Pre-computed offline for "Hero City" (Bengaluru).
 
