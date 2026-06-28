@@ -1,4 +1,7 @@
 import unittest
+import tempfile
+import shutil
+from pathlib import Path
 import numpy as np
 import networkx as nx
 from graph.healing.healer import GraphHealer, RepairExplanation
@@ -12,7 +15,12 @@ class TestGraphHealer(unittest.TestCase):
     """
 
     def setUp(self):
-        self.healer = GraphHealer(max_search_radius=50.0, decision_threshold=0.65)
+        self.healer = GraphHealer(max_search_radius=50.0, decision_threshold=0.65, min_ai_confidence=0.30)
+        self.temp_dir = Path(tempfile.mkdtemp())
+
+    def tearDown(self):
+        if self.temp_dir.exists():
+            shutil.rmtree(self.temp_dir)
 
     def test_repair_explanation_metadata(self):
         """Test that RepairExplanation serializes all requested explainability fields."""
@@ -94,6 +102,46 @@ class TestGraphHealer(unittest.TestCase):
         self.assertEqual(meta["source_node"], "N1")
         self.assertEqual(meta["destination_node"], "N2")
         self.assertEqual(meta["status"], "Accepted")
+
+    def test_safety_barrier_veto(self):
+        """Test that candidate connection across an obvious non-road barrier (low AI confidence) is vetoed."""
+        G = nx.Graph()
+        G.add_node("N1", pixel_coord=(10, 10), node_type="endpoint")
+        G.add_node("N0", pixel_coord=(10, 0), node_type="path_node")
+        G.add_edge("N0", "N1")
+        
+        G.add_node("N2", pixel_coord=(10, 20), node_type="endpoint")
+        G.add_node("N3", pixel_coord=(10, 30), node_type="path_node")
+        G.add_edge("N2", "N3")
+
+        # Create prob_mask with 0.10 confidence in the gap (water / building barrier)
+        prob_mask = np.full((40, 40), 0.10, dtype=np.float32)
+
+        exp = self.healer.evaluate_candidate(G, "N1", "N2", prob_mask=prob_mask)
+        self.assertFalse(exp.accepted)
+        self.assertIn("mandatory minimum safety barrier threshold", exp.explanation)
+
+    def test_statistics_and_visualization(self):
+        """Test generation of healing statistics dictionary and 4-panel diagnostic visualization."""
+        G = nx.Graph()
+        G.add_node("N1", pixel_coord=(10, 10), node_type="endpoint")
+        G.add_node("N0", pixel_coord=(10, 0), node_type="path_node")
+        G.add_edge("N0", "N1")
+        G.add_node("N2", pixel_coord=(10, 20), node_type="endpoint")
+        G.add_node("N3", pixel_coord=(10, 30), node_type="path_node")
+        G.add_edge("N2", "N3")
+
+        healed_G, _ = self.healer.heal_graph(G)
+        stats = self.healer.compute_healing_statistics()
+        
+        self.assertEqual(stats["num_repaired_gaps"], 1)
+        self.assertGreater(stats["avg_gap_length"], 0.0)
+        self.assertIn("mean", stats["confidence_distribution"])
+
+        vis_path = self.temp_dir / "healing_vis.png"
+        bg_mask = np.zeros((40, 40), dtype=np.uint8)
+        self.healer.generate_healing_visualization(G, healed_G, bg_mask, vis_path)
+        self.assertTrue(vis_path.exists())
 
 
 if __name__ == "__main__":

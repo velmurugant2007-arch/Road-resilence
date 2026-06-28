@@ -2,6 +2,8 @@ import time
 import numpy as np
 from scipy.ndimage import convolve, label
 from typing import List, Tuple, Dict, Any
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from pathlib import Path
 from utils.logger import get_logger

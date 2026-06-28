@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Any, Optional
 import numpy as np
 import networkx as nx
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from utils.logger import get_logger
 

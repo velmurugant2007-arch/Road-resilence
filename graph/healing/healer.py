@@ -1,7 +1,11 @@
 import math
+from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
 import numpy as np
 import networkx as nx
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 from utils.logger import get_logger
 
 logger = get_logger("graph.healing.healer")
@@ -76,10 +80,12 @@ class GraphHealer:
         self,
         max_search_radius: float = 100.0,
         decision_threshold: float = 0.65,
+        min_ai_confidence: float = 0.30,
         weights: Optional[Tuple[float, float, float, float, float]] = None
     ):
         self.max_search_radius = max_search_radius
         self.threshold = decision_threshold
+        self.min_ai_confidence = min_ai_confidence
         self.weights = weights or (0.25, 0.35, 0.20, 0.10, 0.10)
         self.repair_history: List[RepairExplanation] = []
         self._repair_counter = 1
@@ -170,7 +176,10 @@ class GraphHealer:
         w1, w2, w3, w4, w5 = self.weights
         hybrid_score = w1 * s_dist + w2 * s_ai + w3 * s_dir + w4 * s_width + w5 * s_density
 
-        accepted = hybrid_score >= self.threshold
+        # Safety rule: Never connect across obvious non-road barriers when AI confidence is low
+        barrier_veto = (prob_mask is not None) and (s_ai < self.min_ai_confidence)
+        accepted = (hybrid_score >= self.threshold) and not barrier_veto
+
         repair_id = f"RH-{self._repair_counter:03d}"
         self._repair_counter += 1
 
@@ -183,6 +192,11 @@ class GraphHealer:
             explanation = (
                 f"Accepted because hybrid cost score ({hybrid_score:.2f}) exceeded threshold ({self.threshold}). "
                 f"Connection supported by {reason_str}."
+            )
+        elif barrier_veto:
+            explanation = (
+                f"Rejected because AI road confidence across gap ({s_ai:.2f}) fell below mandatory minimum safety barrier threshold ({self.min_ai_confidence}), "
+                f"preventing connection across obvious non-road barrier."
             )
         else:
             reasons = []
@@ -270,3 +284,118 @@ class GraphHealer:
 
         logger.info(f"Graph healing complete. Added {len(accepted_repairs)} healed connections out of {len(candidates)} evaluated.")
         return healed_G, [exp.to_dict() for exp in self.repair_history]
+
+    def compute_healing_statistics(self) -> Dict[str, Any]:
+        """
+        Generates graph-healing statistics:
+        - Number of repaired gaps
+        - Average gap length
+        - Confidence distribution
+        - False connection detection
+        """
+        total_eval = len(self.repair_history)
+        accepted = [exp for exp in self.repair_history if exp.accepted]
+        rejected = [exp for exp in self.repair_history if not exp.accepted]
+
+        num_repaired = len(accepted)
+        avg_gap_len = float(np.mean([exp.distance for exp in accepted])) if accepted else 0.0
+
+        all_confs = [exp.ai_confidence for exp in self.repair_history]
+        conf_dist = {
+            "mean": round(float(np.mean(all_confs)), 4) if all_confs else 0.0,
+            "min": round(float(np.min(all_confs)), 4) if all_confs else 0.0,
+            "max": round(float(np.max(all_confs)), 4) if all_confs else 0.0,
+            "std": round(float(np.std(all_confs)), 4) if all_confs else 0.0
+        }
+
+        # False connection detection: count of candidates rejected due to falling below threshold or safety barrier
+        false_connections_prevented = len(rejected)
+
+        stats = {
+            "total_candidates_evaluated": total_eval,
+            "num_repaired_gaps": num_repaired,
+            "avg_gap_length": round(avg_gap_len, 2),
+            "confidence_distribution": conf_dist,
+            "false_connections_prevented": false_connections_prevented
+        }
+        logger.info(f"Healing statistics: {stats}")
+        return stats
+
+    def generate_healing_visualization(
+        self,
+        orig_G: nx.Graph,
+        healed_G: nx.Graph,
+        bg_mask: Optional[np.ndarray],
+        output_path: Path
+    ):
+        """
+        Generates a 4-panel diagnostic visualization report:
+        1. Original graph
+        2. Candidate connections
+        3. Accepted repairs
+        4. Final healed graph
+        """
+        fig, axes = plt.subplots(2, 2, figsize=(16, 16))
+        ax_orig, ax_cand, ax_rep, ax_final = axes.flatten()
+
+        def draw_base_graph(ax, G_to_draw, title):
+            if bg_mask is not None:
+                ax.imshow(bg_mask, cmap="gray", alpha=0.3)
+            ax.set_title(title, fontsize=13, fontweight="bold")
+            # Draw original edges
+            for u, v, attr in G_to_draw.edges(data=True):
+                if attr.get("edge_type") != "healed":
+                    poly = attr.get("geometry", [])
+                    if poly:
+                        ys = [p[0] for p in poly]
+                        xs = [p[1] for p in poly]
+                        ax.plot(xs, ys, color="#00d2ff", linewidth=2, alpha=0.8)
+            # Draw endpoints
+            ex, ey = [], []
+            for n, d in G_to_draw.nodes(data=True):
+                if d.get("node_type") == "endpoint" or G_to_draw.degree(n) == 1:
+                    r, c = d.get("pixel_coord", (0, 0))
+                    ex.append(c)
+                    ey.append(r)
+            if ex:
+                ax.scatter(ex, ey, c="#ff9900", s=30, marker="s", zorder=4)
+            ax.axis("equal")
+            ax.axis("off")
+
+        # 1. Original Graph
+        draw_base_graph(ax_orig, orig_G, "1. Original Fragmented Graph")
+
+        # 2. Candidate Connections
+        draw_base_graph(ax_cand, orig_G, "2. Evaluated Candidate Connections")
+        for exp in self.repair_history:
+            if exp.source_node in orig_G and exp.destination_node in orig_G:
+                r1, c1 = orig_G.nodes[exp.source_node]["pixel_coord"]
+                r2, c2 = orig_G.nodes[exp.destination_node]["pixel_coord"]
+                color = "green" if exp.accepted else "red"
+                style = "-" if exp.accepted else "--"
+                alpha = 0.8 if exp.accepted else 0.4
+                ax_cand.plot([c1, c2], [r1, r2], color=color, linestyle=style, linewidth=1.5, alpha=alpha)
+
+        # 3. Accepted Repairs
+        draw_base_graph(ax_rep, orig_G, "3. Accepted Repairs (Healed Gaps)")
+        for exp in self.repair_history:
+            if exp.accepted and exp.source_node in orig_G and exp.destination_node in orig_G:
+                r1, c1 = orig_G.nodes[exp.source_node]["pixel_coord"]
+                r2, c2 = orig_G.nodes[exp.destination_node]["pixel_coord"]
+                ax_rep.plot([c1, c2], [r1, r2], color="#00ff66", linewidth=2.5, zorder=5)
+
+        # 4. Final Healed Graph
+        draw_base_graph(ax_final, healed_G, "4. Final Healed Network Graph")
+        for u, v, attr in healed_G.edges(data=True):
+            if attr.get("edge_type") == "healed":
+                poly = attr.get("geometry", [])
+                if poly:
+                    ys = [p[0] for p in poly]
+                    xs = [p[1] for p in poly]
+                    ax_final.plot(xs, ys, color="#00ff66", linewidth=2.5, zorder=5)
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.tight_layout()
+        plt.savefig(output_path, dpi=150)
+        plt.close(fig)
+        logger.info(f"Saved 4-panel healing visualization to {output_path}")
