@@ -6,9 +6,9 @@
 
 ---
 
-**Document Version**: 0.1.0  
+**Document Version**: 0.2.0  
 **Last Updated**: 2026-06-26  
-**Status**: Phase 1 — Workspace Initialization  
+**Status**: Phase 2 — Problem Research Complete  
 **Classification**: Internal Engineering Document
 
 ---
@@ -40,23 +40,21 @@ This document serves as the **single source of truth** for all engineering desig
 
 The project addresses ISRO Problem Statement 4: developing a system that extracts road networks from satellite imagery under occlusion conditions, constructs graph-theoretic representations, and performs criticality analysis for urban mobility applications.
 
-> **Current State**: The workspace has been initialized. This document will be progressively populated as the project advances through research, architecture, and implementation phases.
+> **Current State**: Phase 2 (Problem Research) is complete. Requirements have been extracted and mapped. The engineering strategy shifts from pure CV to Topology-Aware CV and Network Science.
+> 
+> **Next Target**: [Milestone 1 Roadmap](project_roadmap.md) (Architecture & Mock Pipeline).
 
 ---
 
 ## 2. Problem Statement
 
-> ⚠️ **Awaiting official problem statement upload.** This section will contain the complete problem analysis including sentence-by-sentence decomposition, requirement extraction, and innovation opportunities.
+Modern urban centres, particularly rapidly expanding Indian metropolises (e.g., Bengaluru), face a dual challenge in spatial modelling: fragmentation and stagnation. Standard satellite-based road extraction often fails due to "spectral blindness" caused by tree canopies, building shadows and cloud cover. These "broken" masks are useless for real-world applications like disaster response or traffic simulation because they lack topological connectivity. This solution aims to bridge this gap by creating an end-to-end pipeline: first, using context-aware Deep Learning to "see through" occlusions, and second, transforming those masks into a mathematically continuous, weighted graph to identify systemic bottlenecks and simulate urban collapse scenarios.
 
 ---
 
 ## 3. System Overview
 
-> Populated during Phase 5 (Architecture). Will include:
-> - High-level architecture diagram
-> - Module interaction diagram
-> - Data flow overview
-> - Technology stack summary
+> Populated during Phase 5 (Architecture).
 
 ---
 
@@ -64,11 +62,20 @@ The project addresses ISRO Problem Statement 4: developing a system that extract
 
 ### 4.1 Requirement Traceability Matrix
 
-> Populated during Phase 4 (Requirement Verification). Every requirement will map to:
-
-| Req ID | Source | Description | Module | Algorithm | Dataset | Test | Innovation |
-|---|---|---|---|---|---|---|---|
-| — | — | — | — | — | — | — | — |
+| Req ID | Description | Source | Module | Priority |
+|---|---|---|---|---|
+| REQ-01 | Handle dense Indian urban environments | PS Sentence 1 | GIS / Data | High |
+| REQ-02 | Occlusion-robust road extraction | PS Sentence 2 | AI | Critical |
+| REQ-03 | Maximize topological connectivity | PS Sentence 3 | AI / Graph | Critical |
+| REQ-04 | End-to-end processing pipeline | PS Sentence 4 | Backend / Sys | High |
+| REQ-05 | Context-aware Deep Learning model | PS Sentence 4 | AI | Critical |
+| REQ-06 | Mathematically continuous, weighted graph | PS Sentence 4 | Graph | Critical |
+| REQ-07 | Systemic bottleneck identification | PS Sentence 4 | Graph | High |
+| REQ-08 | Urban collapse scenario simulation | PS Sentence 4 | Graph | High |
+| REQ-09 | Measure mIoU, Graph IoU, Breaks/km | PS Diagram | AI Eval | Medium |
+| REQ-10 | Implement Topological Cleaning | PS Diagram | Graph | High |
+| REQ-11 | Multiple Centrality Metrics (BC, k-Core, etc) | PS Diagram | Graph | High |
+| REQ-12 | Giant Component Size tracking | PS Diagram | Graph | High |
 
 ---
 
@@ -147,7 +154,8 @@ Innovations accepted for implementation:
 
 | Innovation ID | Description | Domain | Judging Impact | Status |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| IDEA-0004 | Interactive Disruption Dashboard via click | Dashboard | High | Proposed |
+| IDEA-0005 | Confidence-Weighted Routing | AI/Graph | High | Proposed |
 
 ---
 

@@ -93,4 +93,53 @@ Each decision follows this structure:
 
 ---
 
+### DEC-0003: Adoption of Topology-Aware AI Evaluation
+
+- **Date**: 2026-06-26
+- **Phase**: Phase 2 — Problem Research
+- **Domain**: AI / Evaluation
+- **Status**: Accepted
+
+**Context**: The official problem statement explicitly faults standard AI for producing "broken masks" and the diagrams specify evaluating via "Connectivity (IoU on Graph)" and "Breaks / km".
+
+**Alternatives Considered**:
+1. **Standard CV Evaluation** — Relying purely on Pixel Accuracy, mIoU, and F1 score. Rejected: Doesn't align with the problem statement's core complaint about topological connectivity.
+2. **Topology-Aware Evaluation** — Implementing custom metrics (Graph IoU, Breaks/km) alongside mIoU to select the best model. Selected.
+
+**Decision**: The AI module will be evaluated primarily on topological continuity metrics (`Connectivity (IoU on Graph)`, `Breaks / km`), with standard mIoU acting as a secondary baseline metric.
+
+**Rationale**: This directly answers the problem statement's requirement to overcome "fragmentation" and ensures the AI output is actually useful for the downstream Graph module.
+
+**Consequences**:
+- Requires custom metric implementation during the training/evaluation phase.
+- May lead us to choose a model with slightly lower mIoU but better connectivity.
+
+**Traceability**: REQ-03, REQ-09
+
+---
+
+### DEC-0004: Two-Stage Graph Construction
+
+- **Date**: 2026-06-26
+- **Phase**: Phase 2 — Problem Research
+- **Domain**: Graph Theory
+- **Status**: Accepted
+
+**Context**: Even with occlusion-robust AI, predictions will not be perfectly continuous. The problem statement demands a "mathematically continuous" graph and the diagram explicitly requires a "Topological Cleaning" step.
+
+**Alternatives Considered**:
+1. **Direct Translation** — Simply converting the AI mask pixels to nodes/edges. Rejected: Leaves disconnections that break centrality analysis.
+2. **Two-Stage Construction** — Stage 1: Vectorize raw mask to graph. Stage 2: Topological Cleaning (bridge gaps, prune spurs) to enforce continuity. Selected.
+
+**Decision**: Implement a two-stage Graph Construction pipeline involving explicit Topological Cleaning.
+
+**Rationale**: Mathematically guarantees a continuous graph (or at least maximizes the Giant Component Size) before feeding it into the Centrality and Resilience analysis engines.
+
+**Consequences**:
+- Graph module requires advanced topology-healing algorithms (e.g., MST heuristic gap bridging).
+
+**Traceability**: REQ-06, REQ-10
+
+---
+
 *Next decisions will be recorded as they occur in subsequent phases.*

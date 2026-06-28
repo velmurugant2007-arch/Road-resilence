@@ -3,7 +3,7 @@
 ## Project ATLAS — Route Resilience
 ### Knowledge Base Entry
 
-> This page consolidates the complete understanding of the problem domain. It is the single authoritative reference for what the project must solve and why.
+> This page consolidates the complete understanding of the problem domain based on the Phase 2 Problem Statement Analysis. It is the single authoritative reference for what the project must solve and why.
 
 ---
 
@@ -13,82 +13,49 @@
 **Problem ID**: PS-4  
 **Title**: Route Resilience: Occlusion-Robust Road Extraction & Graph-Theoretic Criticality Analysis for Urban Mobility
 
-> ⚠️ **Status**: Awaiting official problem statement upload. This page will be fully populated during Phase 2: Problem Research.
+**Core Challenge Description**: Modern urban centres, particularly rapidly expanding Indian metropolises (e.g., Bengaluru), face a dual challenge in spatial modelling: fragmentation and stagnation. Standard satellite-based road extraction often fails due to "spectral blindness" caused by tree canopies, building shadows and cloud cover. These "broken" masks are useless for real-world applications like disaster response or traffic simulation because they lack topological connectivity. This solution aims to bridge this gap by creating an end-to-end pipeline: first, using context-aware Deep Learning to "see through" occlusions, and second, transforming those masks into a mathematically continuous, weighted graph to identify systemic bottlenecks and simulate urban collapse scenarios.
 
 ---
 
 ## Problem Domain Decomposition
 
-The problem title suggests three distinct technical challenges:
+The problem requires a shift from pure "Computer Vision" to "Topology-Aware Computer Vision" and "Network Science".
 
 ### 1. Occlusion-Robust Road Extraction
 
 **What**: Extract road networks from satellite imagery even when roads are partially or fully hidden by occlusions.
 
-**Types of Occlusion** (anticipated):
-- Cloud cover (partial and full)
-- Tree canopy / dense vegetation
-- Building shadows
-- Atmospheric haze
-- Temporal occlusion (construction, flooding)
+**Key Technical Insight**: Standard AI models suffer from "spectral blindness." We need context-aware Deep Learning that looks at the surrounding area to infer a road's presence through clouds, shadows, and trees.
 
-**Technical Domain**: Computer Vision, Semantic Segmentation, Remote Sensing
+**Metrics that Matter**: Pixel accuracy (mIoU) is not enough. The AI must be evaluated on `Connectivity (IoU on Graph)` and `Breaks / km`.
 
 ### 2. Graph-Theoretic Criticality Analysis
 
-**What**: Construct a graph representation of the extracted road network and identify critical infrastructure — nodes and edges whose removal would most severely impact network connectivity and traffic flow.
+**What**: Construct a graph representation of the extracted road network and identify critical infrastructure.
 
-**Technical Domain**: Graph Theory, Network Science, Topology Analysis
+**Key Technical Insight**: The graph must be "mathematically continuous." Because the AI mask might still be imperfect, an explicit "Topological Cleaning" step is required during graph construction.
 
-### 3. Urban Mobility
+**Centrality Metrics required**: Betweenness Centrality (BC), CFFBC, a-Centrality, and k-Core. These identify "systemic bottlenecks."
 
-**What**: Apply the analysis to real-world urban mobility scenarios — travel time estimation, alternative route identification, and infrastructure vulnerability assessment.
+### 3. Route Resilience under Disruptions
 
-**Technical Domain**: Transportation Engineering, GIS, Spatial Analysis
+**What**: Simulate urban collapse scenarios.
 
----
-
-## Sentence-by-Sentence Analysis
-
-> **Populated during Phase 2** after the official problem statement is uploaded. Each sentence will be analyzed for:
-> - Original statement
-> - Simple explanation
-> - Technical meaning
-> - Hidden requirements
-> - Implementation requirements
-> - Research opportunities
-> - Possible risks
-> - Innovation ideas
-> - Related modules
-> - Priority
+**Key Technical Insight**: Resilience is measured by tracking the "Network Connectivity" (specifically the Giant Component Size) as nodes/edges are disrupted in various scenarios.
 
 ---
 
-## Evaluation Criteria
+## Engineering Analysis & Pipeline
 
-> **Populated during Phase 2.** Expected criteria domains:
-> - Road extraction accuracy (IoU, Dice, Precision, Recall)
-> - Occlusion recovery quality
-> - Graph connectivity metrics
-> - Criticality analysis correctness
-> - Visualization quality
-> - Innovation
-> - Presentation quality
-> - Documentation
+The end-to-end pipeline must flow as follows:
 
----
-
-## Key Questions to Answer in Phase 2
-
-1. What specific satellite imagery data is provided or expected?
-2. What spatial resolution and spectral bands are available?
-3. What geographic scope (urban, rural, mixed)?
-4. What are the specific evaluation metrics and their weights?
-5. Is there a predefined workflow or is the approach open?
-6. What output formats are expected?
-7. Are there constraints on tools, libraries, or platforms?
-8. What is the judging format (live demo, presentation, documentation)?
+1. **Multi-source Urban Data Ingestion** (Satellite primarily, extensible to Aerial/LiDAR).
+2. **Context-Aware Deep Learning** (Occlusion-robust extraction producing a road mask).
+3. **Road Graph Construction** (Vectorizing the mask into a graph structure).
+4. **Topological Cleaning** (Bridging gaps, removing artifacts to ensure a mathematically continuous graph).
+5. **Criticality Analysis** (Computing BC, k-Core, etc. to find bottlenecks).
+6. **Urban Collapse Simulation** (Disruption scenarios vs Giant Component Size).
 
 ---
 
-*This page is updated continuously as new understanding emerges.*
+*This page is the distillation of the full analysis found in `research/problem_analysis/ps4_analysis.md`.*

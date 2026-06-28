@@ -69,6 +69,7 @@ After every significant action, update the relevant memory files:
 | Had a new idea | `memory/future_ideas.md` |
 | Learned something | `memory/lessons_learned.md` |
 | Changed architecture | `memory/architecture_history.md`, `memory/decisions.md` |
+| Identified technical debt | `memory/technical_debt.md`, `memory/daily_log.md` |
 
 ---
 
