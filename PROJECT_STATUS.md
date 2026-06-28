@@ -42,20 +42,25 @@ road-resilence/
 - **Phase 2: Repository & Engineering Setup** ✅ — Completed
 - **Phase 3: Official Problem Statement Analysis** ✅ — Completed (Externally Verified)
 - **Phase 4: Architecture & Design Specification** ✅ — Completed
+- **Phase 7.1: Project Skeleton & Foundation** ✅ — Completed, Verified, Approved
+- **Phase 7.2: GIS Module** ✅ — Completed, Verified, Approved
 
 ## ⏳ Pending Phases
-- **Phase 5: [SKIPPED]**
-- **Phase 6: [SKIPPED]**
-- **Phase 7: Implementation**
-  - Phase 7.1 (Project Skeleton & Foundation): ✅ Completed
-  - Phase 7.2 (GIS Module): ✅ Completed, ✅ Verified, ✅ Approved
-  - Phase 7.3 (AI Module): In Progress
-  - Phase 7.4 - 7.9: Pending
-- **Phase 8: AI Training**
-- **Phase 9: Testing**
-- **Phase 10: Optimization**
-- **Phase 11: Presentation**
-- **Phase 12: Final Review**
+- **Phase 7.3: AI Module** ← CURRENT
+  - 7.3.1: Dataset Loader, Validation, Augmentation — Pending
+  - 7.3.2: SegFormer Model Wrapper — Pending
+  - 7.3.3: Loss Functions (Dice, Soft-Skeleton, clDice) — Pending
+  - 7.3.4: Training Pipeline — Pending
+  - 7.3.5: Inference Pipeline — Pending
+  - 7.3.6: Confidence Map & Calibration — Pending
+- **Phase 7.4: Graph Module** — Pending
+- **Phase 7.5: Backend** — Pending
+- **Phase 7.6: Frontend** — Pending
+- **Phase 7.7: Integration** — Pending
+- **Phase 7.8: Optimization** — Pending
+- **Phase 7.9: Testing** — Pending
+- **Phase 8: AI Training** — Pending
+- **Phase 9–12: QA, Presentation, Final Review** — Pending
 
 ---
 
@@ -80,16 +85,16 @@ road-resilence/
 - The project is actively executing Implementation (Phase 7).
 
 ## 🧠 AI Status
-**Status: ⏳ PENDING (Phase 8)**
-- No code written. 
-- Strategic intent: We will use a topology-aware loss function (e.g., clDice) rather than standard cross-entropy to prevent "The mIoU Trap" (high pixel accuracy but disconnected roads).
-- Strategic intent: Model will output confidence maps to highlight hallucinated roads under clouds.
+**Status: 🔧 IN PROGRESS (Phase 7.3)**
+- GIS preprocessing pipeline is complete and verified.
+- Next: Building the AI dataset loader, SegFormer wrapper, and topology-aware clDice loss.
+- Architecture: SegFormer (MiT-B2) with Soft-Skeletonized clDice and Confidence Calibration (Temperature Scaling).
 
 ## 🕸️ Graph Status
-**Status: ⏳ PENDING (Phase 7)**
+**Status: ⏳ PENDING (Phase 7.4)**
 - No code written.
-- Strategic intent: We will use an MST (Minimum Spanning Tree) distance heuristic to force topological gap bridging (Topology Cleaning).
-- Strategic intent: Centrality calculations ($O(VE)$) will be pre-computed offline for the "Hero City" (Bengaluru) to guarantee zero-latency performance during the demo.
+- Architecture: Hybrid Cost Function healing (Euclidean + AI Probability + Direction + Width + Density).
+- Centrality: Pre-computed offline for "Hero City" (Bengaluru).
 
 ---
 
@@ -101,9 +106,9 @@ road-resilence/
 ---
 
 ## 🎯 Next Milestone
-**Milestone 1: System Architecture & End-to-End Mock Pipeline**
+**Phase 7.3.1: AI Dataset Loader & Augmentation Pipeline**
 *Deliverables:*
-- HLD / LLD / Data Flow Diagrams
-- API Contracts
-- "Hero City" Mock JSON Pipeline
-*(Cannot commence until Phase 3 Video Analysis clears the Architecture Validation Gate).*
+- PyTorch Dataset class for satellite road extraction
+- Synthetic cloud/shadow augmentation system
+- Dataset split validation (Train/Val/Test)
+*Acceptance Criteria:* DataLoader produces batched tensors with correct shapes and augmentations applied.
