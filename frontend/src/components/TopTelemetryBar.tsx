@@ -10,18 +10,39 @@ export const TopTelemetryBar: React.FC = () => {
     setActiveView,
     addNotification,
     theme,
-    setTheme
+    setTheme,
+    backendHealth,
+    triggerExportGeoJson
   } = useAppStore();
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleAction = (actionName: string) => {
+    if (actionName === 'Export Report' || actionName === 'Generate PDF') {
+      triggerExportGeoJson();
+      return;
+    }
+    if (actionName === 'Capture Screenshot') {
+      window.print();
+    }
     addNotification({
       type: 'success',
       title: `${actionName} Executed`,
       message: `Successfully triggered ${actionName.toLowerCase()} presentation action.`
     });
   };
+
+  const getHealthBadge = () => {
+    if (backendHealth === 'healthy') {
+      return { text: 'API: HEALTHY (<50ms)', bg: 'var(--primary-900)', border: 'var(--primary-500)', dot: 'var(--primary-500)' };
+    }
+    if (backendHealth === 'offline') {
+      return { text: 'API: OFFLINE CACHE', bg: 'rgba(245, 158, 11, 0.15)', border: '#F59E0B', dot: '#F59E0B' };
+    }
+    return { text: 'API: SYNCING...', bg: 'rgba(100, 116, 139, 0.15)', border: '#64748B', dot: '#64748B' };
+  };
+
+  const healthStyle = getHealthBadge();
 
   return (
     <header className="glass-panel" style={{
@@ -38,7 +59,7 @@ export const TopTelemetryBar: React.FC = () => {
       zIndex: 400
     }}>
       {/* Left Branding */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setActiveView('overview')}>
         <div style={{
           width: '32px', height: '32px', borderRadius: '8px',
           background: 'linear-gradient(135deg, #00F2FE 0%, #003B46 100%)',
@@ -48,7 +69,7 @@ export const TopTelemetryBar: React.FC = () => {
           A
         </div>
         <div>
-          <span style={{ fontSize: '16px', fontWeight: 700, letterSpacing: '1.5px' }}>ATLAS</span>
+          <span style={{ fontSize: '16px', fontWeight: 700, letterSpacing: '1.5px', color: 'var(--text-primary)' }}>ATLAS</span>
           <span style={{ marginLeft: '8px', fontSize: '12px', color: 'var(--primary-500)', fontWeight: 600 }}>
             ISRO ROUTE RESILIENCE
           </span>
@@ -84,8 +105,8 @@ export const TopTelemetryBar: React.FC = () => {
         </button>
 
         <div style={{
-          background: 'var(--primary-900)',
-          border: '1px solid var(--primary-500)',
+          background: healthStyle.bg,
+          border: `1px solid ${healthStyle.border}`,
           borderRadius: '9999px',
           padding: '4px 12px',
           display: 'flex',
@@ -95,8 +116,8 @@ export const TopTelemetryBar: React.FC = () => {
           fontWeight: 600,
           color: 'var(--text-primary)'
         }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary-500)', boxShadow: '0 0 6px var(--primary-500)' }} />
-          <span>API: HEALTHY (&lt;50ms)</span>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: healthStyle.dot, boxShadow: `0 0 6px ${healthStyle.dot}` }} />
+          <span>{healthStyle.text}</span>
         </div>
       </div>
 

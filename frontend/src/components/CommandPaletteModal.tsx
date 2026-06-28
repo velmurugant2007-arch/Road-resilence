@@ -11,7 +11,8 @@ export const CommandPaletteModal: React.FC = () => {
     setSelectedEdgeId, 
     setSelectedRepairId,
     setSimulating,
-    addNotification 
+    addNotification,
+    triggerExportGeoJson
   } = useAppStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,7 +38,7 @@ export const CommandPaletteModal: React.FC = () => {
     { id: 'view-sim', title: 'Navigate: Stress Simulation', category: 'Navigation', icon: <Activity size={16} />, run: () => setActiveView('simulation') },
     { id: 'view-crit', title: 'Navigate: Criticality Analysis', category: 'Navigation', icon: <Share2 size={16} />, run: () => setActiveView('criticality') },
     { id: 'sim-trigger', title: 'Action: Trigger Disaster Flood Simulation', category: 'Simulations', icon: <Activity size={16} color="var(--critical)" />, run: () => { setActiveView('simulation'); setSimulating(true); addNotification({ type: 'warning', title: 'Simulation Started', message: 'Stochastic flood failure model executing.' }); } },
-    { id: 'export-geo', title: 'Action: Export GeoJSON Network', category: 'Actions', icon: <FileText size={16} />, run: () => addNotification({ type: 'success', title: 'Export Complete', message: 'hero_city_bengaluru.geojson downloaded.' }) },
+    { id: 'export-geo', title: 'Action: Export GeoJSON Network', category: 'Actions', icon: <FileText size={16} />, run: () => triggerExportGeoJson() },
     { id: 'search-rh001', title: 'Inspect Repair ID: RH-001 [Accepted]', category: 'Spatial Search', icon: <HeartHandshake size={16} color="var(--success)" />, run: () => { setActiveView('graph-healing'); setSelectedRepairId('RH-001'); setSelectedEdgeId('RH-001'); } },
     { id: 'search-e088', title: 'Inspect Edge ID: E-088 [Critical Link]', category: 'Spatial Search', icon: <Share2 size={16} color="var(--warning)" />, run: () => { setActiveView('criticality'); setSelectedEdgeId('E-088'); } },
     { id: 'search-n154', title: 'Inspect Node ID: N154 [Junction]', category: 'Spatial Search', icon: <Share2 size={16} color="var(--info)" />, run: () => { setActiveView('overview'); } }

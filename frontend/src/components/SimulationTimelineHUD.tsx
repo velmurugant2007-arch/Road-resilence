@@ -1,24 +1,49 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { Play, Pause, RotateCcw, FastForward } from 'lucide-react';
 
 export const SimulationTimelineHUD: React.FC = () => {
-  const { activeView, isSimulating, setSimulating, simulationStep, setSimulationStep, addNotification } = useAppStore();
+  const { activeView, isSimulating, setSimulating, simulationStep, setSimulationStep, triggerSimulation } = useAppStore();
+
+  useEffect(() => {
+    let interval: any;
+    if (isSimulating) {
+      interval = setInterval(() => {
+        setSimulationStep((prev) => {
+          if (prev >= 100) {
+            setSimulating(false);
+            return 100;
+          }
+          return prev + 5;
+        });
+      }, 500);
+    }
+    return () => clearInterval(interval);
+  }, [isSimulating, setSimulating, setSimulationStep]);
 
   if (activeView !== 'simulation' && activeView !== 'decision-support') return null;
 
   const togglePlay = () => {
     const nextState = !isSimulating;
+    if (nextState && simulationStep >= 100) {
+      setSimulationStep(1);
+    }
     setSimulating(nextState);
     if (nextState) {
-      addNotification({ type: 'warning', title: 'Simulation Running', message: `Executing step ${simulationStep}/100 flood progression.` });
+      triggerSimulation();
     }
   };
 
   const resetSim = () => {
     setSimulating(false);
     setSimulationStep(1);
-    addNotification({ type: 'info', title: 'Simulation Reset', message: 'Restored baseline Hero City road graph.' });
+  };
+
+  const handleScrub = (val: number) => {
+    setSimulationStep(val);
+    if (val % 20 === 0) {
+      triggerSimulation();
+    }
   };
 
   return (
@@ -61,7 +86,7 @@ export const SimulationTimelineHUD: React.FC = () => {
         </button>
 
         <button
-          onClick={() => setSimulationStep(Math.min(100, simulationStep + 10))}
+          onClick={() => handleScrub(Math.min(100, simulationStep + 10))}
           title="Step Forward"
           style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
         >
@@ -80,7 +105,7 @@ export const SimulationTimelineHUD: React.FC = () => {
           min={1}
           max={100}
           value={simulationStep}
-          onChange={(e) => setSimulationStep(Number(e.target.value))}
+          onChange={(e) => handleScrub(Number(e.target.value))}
           style={{
             width: '100%', height: '4px', accentColor: 'var(--primary-500)',
             background: 'rgba(255,255,255,0.2)', borderRadius: '2px', cursor: 'pointer'

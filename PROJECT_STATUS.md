@@ -120,7 +120,7 @@ road-resilence/
 ---
 
 ## 🖥️ Frontend & UI/UX Status
-**Status: ✅ COMPLETED & VERIFIED (Phase 9 Finished)**
+**Status: ✅ COMPLETED & VERIFIED (Phase 9.2.1 Finished)**
 - Completed dedicated UI/UX Design Phase producing 10 specifications (`dashboard/design/01-10`) in Apple HIG / Linear / ArcGIS Pro aesthetic.
 - Scaffolded React 18 + TypeScript + Vite production bundle (`frontend/`).
 - Implemented glassmorphic Top Telemetry Bar with presentation actions (Export Report, Capture Screenshot, Generate PDF, Settings) and live Notification Bell.
@@ -128,7 +128,9 @@ road-resilence/
 - Built interactive WebGL/SVG Map Canvas (`70%+` screen budget) rendering road vectors, flood blast zones, and clickable explainable repaired links (`RH-001`).
 - Implemented Floating Inspector Panel displaying multi-factor hybrid cost breakdowns, centrality rankings, AI probability sliders, and system config.
 - Implemented Mini Map spatial inset and slide-out Notification Center Drawer.
-- Verified clean production bundle via `npm run build` (`207ms`).
+- Wired all components to live FastAPI backend endpoints (`http://localhost:8000/api/v1`) via `apiClient.ts` with dual-mode resilient Offline Sandbox fallback.
+- Verified interaction states (loading spinners, disabled buttons, toasts) and generated verification report (`frontend_functional_verification_report.md`).
+- Verified clean production bundle via `npm run build` (`331ms`).
 
 ---
 

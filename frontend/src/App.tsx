@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppStore } from './store/useAppStore';
 import { TacticalLoader } from './components/TacticalLoader';
 import { TopTelemetryBar } from './components/TopTelemetryBar';
 import { SidebarNavigationDock } from './components/SidebarNavigationDock';
@@ -11,6 +12,11 @@ import { NotificationCenterDrawer } from './components/NotificationCenterDrawer'
 
 export default function App() {
   const [isBooting, setIsBooting] = useState(true);
+  const { initBackendSync } = useAppStore();
+
+  useEffect(() => {
+    initBackendSync();
+  }, [initBackendSync]);
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
