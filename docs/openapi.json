@@ -1,0 +1,1105 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ATLAS Road Resilience API",
+    "description": "Production FastAPI backend serving AI Road Segmentation, Graph Healing, Criticality Analysis, and Stress Simulation for urban mobility resilience.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "System & Configuration"
+        ],
+        "summary": "Health check endpoint (v1)",
+        "description": "Returns system health, version, and module initialization statuses.",
+        "operationId": "get_health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "System & Configuration"
+        ],
+        "summary": "Health check endpoint",
+        "description": "Returns system health, version, and module initialization statuses.",
+        "operationId": "get_health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/config": {
+      "get": {
+        "tags": [
+          "System & Configuration"
+        ],
+        "summary": "Get current system configuration",
+        "description": "Retrieves current global system parameters and thresholds.",
+        "operationId": "get_config_api_v1_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfig"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "System & Configuration"
+        ],
+        "summary": "Update system configuration",
+        "description": "Updates runtime parameters such as AI confidence thresholds or RDP simplification tolerances.",
+        "operationId": "update_config_api_v1_config_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemConfig"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfig"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/infer": {
+      "post": {
+        "tags": [
+          "AI Inference"
+        ],
+        "summary": "Run AI Road Segmentation & Occlusion Inference",
+        "description": "Executes SegFormer inference over input satellite tiles or synthetic occlusion masks.\nReturns segmentation accuracy metrics (clDice, IoU) and detected occlusion coverage percentage.",
+        "operationId": "run_inference_api_v1_ai_infer_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AIInferenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIInferenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/graph/construct": {
+      "post": {
+        "tags": [
+          "Graph Construction & Analysis"
+        ],
+        "summary": "Construct Road Graph from polylines",
+        "description": "Converts vector road polylines into a mathematically verified NetworkX graph.\nComputes structural statistics (components, degrees) and exports GeoJSON.",
+        "operationId": "construct_graph_api_v1_graph_construct_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphConstructRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphConstructResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/graph/heal": {
+      "post": {
+        "tags": [
+          "Graph Construction & Analysis"
+        ],
+        "summary": "Heal fragmented graph occlusions",
+        "description": "Reconnects fragmented road networks across occlusions using the Hybrid Cost Function.\nIncludes explainable AI (XAI) metadata for every accepted and rejected candidate.",
+        "operationId": "heal_graph_api_v1_graph_heal_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GraphHealRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphHealResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/graph/baseline": {
+      "get": {
+        "tags": [
+          "Graph Construction & Analysis"
+        ],
+        "summary": "Get Hero City baseline road graph GeoJSON",
+        "description": "Fetches the fully pre-computed, healthy Hero City (Bengaluru) graph cached in memory.\nGuaranteed response time <50ms.",
+        "operationId": "get_baseline_graph_api_v1_graph_baseline_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Get Baseline Graph Api V1 Graph Baseline Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/graph/criticality": {
+      "get": {
+        "tags": [
+          "Graph Construction & Analysis"
+        ],
+        "summary": "Get multi-metric criticality vulnerability report",
+        "description": "Returns multi-metric composite centrality scores (Betweenness, Closeness, Degree, K-Core, Articulation points)\nand network resilience rankings.",
+        "operationId": "get_criticality_report_api_v1_graph_criticality_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Get Criticality Report Api V1 Graph Criticality Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Graph Construction & Analysis"
+        ],
+        "summary": "Compute or fetch multi-metric criticality report",
+        "description": "Returns multi-metric composite centrality scores (Betweenness, Closeness, Degree, K-Core, Articulation points)\nand network resilience rankings.",
+        "operationId": "get_criticality_report_api_v1_graph_criticality_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Get Criticality Report Api V1 Graph Criticality Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/metrics/centrality": {
+      "get": {
+        "tags": [
+          "Graph Metrics"
+        ],
+        "summary": "Get statistical centrality distribution",
+        "description": "Returns bucketed frequency distribution of centrality metrics for frontend charting.",
+        "operationId": "get_centrality_metrics_api_v1_metrics_centrality_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response Get Centrality Metrics Api V1 Metrics Centrality Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulation/stress": {
+      "post": {
+        "tags": [
+          "Stress Simulation & Resilience"
+        ],
+        "summary": "Simulate stress failure scenario",
+        "description": "Mutates road network topology by removing nodes or edges within a bounding box or stochastically.\nComputes global efficiency drops ($E$), connectivity ratio, travel impact detour %,\nand recommends ranked emergency repair priorities based on marginal recovery ($\\Delta R$).",
+        "operationId": "simulate_disaster_api_v1_simulation_stress_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisasterSimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisasterSimulationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulation/disrupt": {
+      "post": {
+        "tags": [
+          "Stress Simulation & Resilience"
+        ],
+        "summary": "Simulate regional or stochastic infrastructure disaster",
+        "description": "Mutates road network topology by removing nodes or edges within a bounding box or stochastically.\nComputes global efficiency drops ($E$), connectivity ratio, travel impact detour %,\nand recommends ranked emergency repair priorities based on marginal recovery ($\\Delta R$).",
+        "operationId": "simulate_disaster_api_v1_simulation_disrupt_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisasterSimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisasterSimulationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/export/geojson": {
+      "get": {
+        "tags": [
+          "Data Export"
+        ],
+        "summary": "Export current graph as standard GeoJSON FeatureCollection",
+        "description": "Exports current active graph state (baseline or healed) as a standard GeoJSON FeatureCollection\nsuitable for QGIS, Mapbox, or Leaflet frontend rendering.",
+        "operationId": "export_geojson_api_v1_export_geojson_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Export Geojson Api V1 Export Geojson Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AIInferenceRequest": {
+        "properties": {
+          "image_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Id",
+            "description": "Identifier of image or synthetic scenario",
+            "default": "sample_cloud_01"
+          },
+          "occlusion_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occlusion Type",
+            "description": "Type of synthetic occlusion applied",
+            "default": "cloud"
+          },
+          "confidence_threshold": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Threshold",
+            "default": 0.65
+          }
+        },
+        "type": "object",
+        "title": "AIInferenceRequest"
+      },
+      "AIInferenceResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "image_id": {
+            "type": "string",
+            "title": "Image Id"
+          },
+          "inference_time_ms": {
+            "type": "number",
+            "title": "Inference Time Ms"
+          },
+          "cldice_score": {
+            "type": "number",
+            "title": "Cldice Score"
+          },
+          "iou_score": {
+            "type": "number",
+            "title": "Iou Score"
+          },
+          "occlusion_coverage_pct": {
+            "type": "number",
+            "title": "Occlusion Coverage Pct"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_id",
+          "inference_time_ms",
+          "cldice_score",
+          "iou_score",
+          "occlusion_coverage_pct",
+          "message"
+        ],
+        "title": "AIInferenceResponse"
+      },
+      "BoundingBox": {
+        "properties": {
+          "min_lat": {
+            "type": "number",
+            "title": "Min Lat",
+            "example": 12.9
+          },
+          "max_lat": {
+            "type": "number",
+            "title": "Max Lat",
+            "example": 12.95
+          },
+          "min_lon": {
+            "type": "number",
+            "title": "Min Lon",
+            "example": 77.5
+          },
+          "max_lon": {
+            "type": "number",
+            "title": "Max Lon",
+            "example": 77.55
+          }
+        },
+        "type": "object",
+        "required": [
+          "min_lat",
+          "max_lat",
+          "min_lon",
+          "max_lon"
+        ],
+        "title": "BoundingBox"
+      },
+      "DisasterSimulationRequest": {
+        "properties": {
+          "disaster_type": {
+            "type": "string",
+            "title": "Disaster Type",
+            "default": "flood",
+            "example": "flood"
+          },
+          "bounding_box": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BoundingBox"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "failure_fraction": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Fraction",
+            "default": 0.15
+          },
+          "center_node_id": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Center Node Id"
+          },
+          "radius_meters": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radius Meters",
+            "default": 50.0
+          }
+        },
+        "type": "object",
+        "title": "DisasterSimulationRequest"
+      },
+      "DisasterSimulationResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "resilience_score": {
+            "type": "number",
+            "title": "Resilience Score"
+          },
+          "baseline_resilience_score": {
+            "type": "number",
+            "title": "Baseline Resilience Score"
+          },
+          "nodes_lost": {
+            "type": "integer",
+            "title": "Nodes Lost"
+          },
+          "edges_lost": {
+            "type": "integer",
+            "title": "Edges Lost"
+          },
+          "connected_components": {
+            "type": "integer",
+            "title": "Connected Components"
+          },
+          "connectivity_ratio": {
+            "type": "number",
+            "title": "Connectivity Ratio"
+          },
+          "travel_impact_pct": {
+            "type": "number",
+            "title": "Travel Impact Pct"
+          },
+          "degraded_graph": {
+            "type": "object",
+            "title": "Degraded Graph"
+          },
+          "recommended_repair_priority": {
+            "items": {
+              "$ref": "#/components/schemas/RepairPriorityItem"
+            },
+            "type": "array",
+            "title": "Recommended Repair Priority"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resilience_score",
+          "baseline_resilience_score",
+          "nodes_lost",
+          "edges_lost",
+          "connected_components",
+          "connectivity_ratio",
+          "travel_impact_pct",
+          "degraded_graph",
+          "recommended_repair_priority"
+        ],
+        "title": "DisasterSimulationResponse"
+      },
+      "GraphConstructRequest": {
+        "properties": {
+          "source_mask_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Mask Id",
+            "default": "default_mask"
+          },
+          "simplify_epsilon": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simplify Epsilon",
+            "default": 2.0
+          },
+          "prune_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prune Threshold",
+            "default": 15.0
+          }
+        },
+        "type": "object",
+        "title": "GraphConstructRequest"
+      },
+      "GraphConstructResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "node_count": {
+            "type": "integer",
+            "title": "Node Count"
+          },
+          "edge_count": {
+            "type": "integer",
+            "title": "Edge Count"
+          },
+          "connected_components": {
+            "type": "integer",
+            "title": "Connected Components"
+          },
+          "average_degree": {
+            "type": "number",
+            "title": "Average Degree"
+          },
+          "geojson": {
+            "type": "object",
+            "title": "Geojson"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node_count",
+          "edge_count",
+          "connected_components",
+          "average_degree",
+          "geojson"
+        ],
+        "title": "GraphConstructResponse"
+      },
+      "GraphHealRequest": {
+        "properties": {
+          "max_search_radius": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Search Radius",
+            "default": 100.0
+          },
+          "decision_threshold": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Threshold",
+            "default": 0.65
+          },
+          "min_ai_confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Ai Confidence",
+            "default": 0.3
+          }
+        },
+        "type": "object",
+        "title": "GraphHealRequest"
+      },
+      "GraphHealResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "repaired_gap_count": {
+            "type": "integer",
+            "title": "Repaired Gap Count"
+          },
+          "total_candidates_evaluated": {
+            "type": "integer",
+            "title": "Total Candidates Evaluated"
+          },
+          "false_connections_prevented": {
+            "type": "integer",
+            "title": "False Connections Prevented"
+          },
+          "healed_geojson": {
+            "type": "object",
+            "title": "Healed Geojson"
+          },
+          "explanations": {
+            "items": {
+              "$ref": "#/components/schemas/RepairExplanationModel"
+            },
+            "type": "array",
+            "title": "Explanations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "repaired_gap_count",
+          "total_candidates_evaluated",
+          "false_connections_prevented",
+          "healed_geojson",
+          "explanations"
+        ],
+        "title": "GraphHealResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "example": "healthy"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "example": "1.0.0"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "modules_initialized": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "type": "object",
+            "title": "Modules Initialized"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version",
+          "timestamp",
+          "modules_initialized"
+        ],
+        "title": "HealthResponse"
+      },
+      "RepairExplanationModel": {
+        "properties": {
+          "repair_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repair Id"
+          },
+          "edge_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Id"
+          },
+          "source_node": {
+            "title": "Source Node"
+          },
+          "destination_node": {
+            "title": "Destination Node"
+          },
+          "distance": {
+            "type": "number",
+            "title": "Distance"
+          },
+          "ai_confidence": {
+            "type": "number",
+            "title": "Ai Confidence"
+          },
+          "direction_consistency": {
+            "type": "number",
+            "title": "Direction Consistency"
+          },
+          "road_width_similarity": {
+            "type": "number",
+            "title": "Road Width Similarity"
+          },
+          "local_road_density": {
+            "type": "number",
+            "title": "Local Road Density"
+          },
+          "hybrid_cost_score": {
+            "type": "number",
+            "title": "Hybrid Cost Score"
+          },
+          "decision_threshold": {
+            "type": "number",
+            "title": "Decision Threshold"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "accepted": {
+            "type": "boolean",
+            "title": "Accepted"
+          },
+          "barrier_veto": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Barrier Veto",
+            "default": false
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_node",
+          "destination_node",
+          "distance",
+          "ai_confidence",
+          "direction_consistency",
+          "road_width_similarity",
+          "local_road_density",
+          "hybrid_cost_score",
+          "decision_threshold",
+          "accepted",
+          "explanation"
+        ],
+        "title": "RepairExplanationModel"
+      },
+      "RepairPriorityItem": {
+        "properties": {
+          "priority_rank": {
+            "type": "integer",
+            "title": "Priority Rank"
+          },
+          "element_type": {
+            "type": "string",
+            "title": "Element Type"
+          },
+          "element_id": {
+            "title": "Element Id"
+          },
+          "estimated_resilience_improvement": {
+            "type": "number",
+            "title": "Estimated Resilience Improvement"
+          }
+        },
+        "type": "object",
+        "required": [
+          "priority_rank",
+          "element_type",
+          "element_id",
+          "estimated_resilience_improvement"
+        ],
+        "title": "RepairPriorityItem"
+      },
+      "SystemConfig": {
+        "properties": {
+          "ai_confidence_threshold": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Ai Confidence Threshold",
+            "default": 0.65
+          },
+          "min_ai_confidence_barrier": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Min Ai Confidence Barrier",
+            "default": 0.3
+          },
+          "rdp_epsilon": {
+            "type": "number",
+            "minimum": 0.1,
+            "title": "Rdp Epsilon",
+            "default": 2.0
+          },
+          "spur_length_threshold": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Spur Length Threshold",
+            "default": 15.0
+          },
+          "criticality_weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Criticality Weights"
+          }
+        },
+        "type": "object",
+        "title": "SystemConfig"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
