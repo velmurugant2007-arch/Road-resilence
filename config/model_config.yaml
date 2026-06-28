@@ -1,0 +1,74 @@
+# SegFormer & Training Hyperparameter Configuration
+# Status: Phase 7.3.2 (Production Locked)
+# Architecture Traceability: ai_architecture.md, mathematical_design.md
+
+model:
+  name: "SegFormerRoadExtractor"
+  in_channels: 3
+  num_classes: 1
+  encoder:
+    variant: "MiT-B2"
+    embed_dims: [64, 128, 320, 512]
+    num_heads: [1, 2, 5, 8]
+    depths: [3, 4, 6, 3]
+    sr_ratios: [8, 4, 2, 1]
+  decoder:
+    decoder_dim: 256
+
+training:
+  epochs: 100
+  batch_size: 4
+  tile_size: 512
+  learning_rate: 6.0e-5
+  weight_decay: 0.01
+  optimizer: "AdamW"
+  scheduler: "CosineAnnealingLR"
+  scheduler_params:
+    T_max: 100
+    eta_min: 1.0e-7
+  amp_enabled: true           # Automatic Mixed Precision (CER enhancement)
+  gradient_clip_max_norm: 1.0
+
+  # Loss configuration (Phase 7.3.3)
+  loss:
+    type: "hybrid"            # "dice", "cldice", or "hybrid"
+    dice_weight: 0.5
+    cldice_weight: 0.5
+    soft_skeleton_iterations: 10
+
+  # Dataset splits (dataset_strategy.md Section 2)
+  train_ratio: 0.70
+  val_ratio: 0.15
+  # test_ratio is implicitly 0.15
+
+  # Fine-tuning phase (dataset_strategy.md Section 4)
+  finetune:
+    enabled: true
+    start_epoch: 50           # Switch to clDice after this epoch
+    learning_rate: 1.0e-5     # Lower LR for topology fine-tuning
+    unfreeze_encoder: true
+
+checkpointing:
+  save_dir: "models/checkpoints"
+  save_best: true
+  save_latest: true
+  monitor_metric: "val_cldice"
+  monitor_mode: "max"         # Higher is better for clDice
+
+inference:
+  confidence_threshold: 0.5   # Probability above which a pixel is classified as road
+  output_probability_map: true
+  output_binary_mask: true
+
+augmentation:
+  cloud_prob: 0.4
+  shadow_prob: 0.3
+  tree_canopy_prob: 0.25
+  building_shadow_prob: 0.2
+  vehicle_prob: 0.15
+  urban_clutter_prob: 0.15
+  haze_prob: 0.2
+  seasonal_prob: 0.2
+  max_cloud_coverage: 0.4
+  geometric_flip: true
+  geometric_rotate: true
