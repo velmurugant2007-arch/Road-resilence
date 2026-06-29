@@ -9,6 +9,7 @@ import { SimulationTimelineHUD } from './components/SimulationTimelineHUD';
 import { MiniMapOverview } from './components/MiniMapOverview';
 import { CommandPaletteModal } from './components/CommandPaletteModal';
 import { NotificationCenterDrawer } from './components/NotificationCenterDrawer';
+import { ToastStack } from './components/ToastStack';
 
 export default function App() {
   const [isBooting, setIsBooting] = useState(true);
@@ -24,31 +25,18 @@ export default function App() {
         <TacticalLoader onComplete={() => setIsBooting(false)} />
       ) : (
         <>
-          {/* Spatial WebGL Map Canvas (70%+ screen budget) */}
           <WebGLMapCanvas />
-
-          {/* HUD Navigation Header */}
           <TopTelemetryBar />
-
-          {/* Left Navigation Dock */}
           <SidebarNavigationDock />
-
-          {/* Bottom Left Mini Map */}
           <MiniMapOverview />
-
-          {/* Bottom Simulation Scrubbing HUD */}
           <SimulationTimelineHUD />
-
-          {/* Right Inspector & Analytics Panel */}
           <FloatingInspectorPanel />
-
-          {/* Floating Command Palette (Ctrl+K) */}
           <CommandPaletteModal />
-
-          {/* Slide-out Notification Center Drawer */}
           <NotificationCenterDrawer />
+          <ToastStack />
         </>
       )}
     </div>
   );
 }
+

@@ -250,7 +250,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         title: 'Backend Synced',
         message: `Connected to live FastAPI server v${health.version}.`
       });
-    } catch (err) {
+    } catch {
       set({ backendHealth: 'offline' });
       get().addNotification({
         type: 'warning',
@@ -267,7 +267,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (get().backendHealth === 'healthy') {
         await apiClient.updateConfig(nextConfig);
       }
-    } catch (err) {
+    } catch {
       // Offline fallback already updated state
     }
   },
@@ -419,7 +419,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       get().addNotification({ type: 'success', title: 'Export Downloaded', message: 'GeoJSON package saved to your device.' });
-    } catch (err) {
+    } catch {
       get().addNotification({ type: 'critical', title: 'Export Failed', message: 'Could not generate export file.' });
     }
   }
